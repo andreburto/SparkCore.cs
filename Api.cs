@@ -53,18 +53,70 @@ namespace SparkCore
             return jsonResponse;            
         }
 
-        // Delete an access token
-        public SparkCore.Json.delete_token DeleteToken(string access_token, string id, string pw)
+        // Get a variable
+        public SparkCore.Json.variable GetVariable(string did, string at, string varname)
         {
-            string temp_url = api + "/" + ver + "/access_tokens/" + access_token;
-            string credentials = id + ":" + pw;
-            
+            System.Collections.Specialized.NameValueCollection vals = new System.Collections.Specialized.NameValueCollection();
+            string temp_url = api + "/" + ver + "/devices/" + did + "/" + varname + "?access_token=" + at;
 
             try
             {
                 WebRequest wr = WebRequest.Create(temp_url);
+                ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
+                HttpWebResponse res = (HttpWebResponse)wr.GetResponse();
+                if (res.StatusCode != HttpStatusCode.OK) { throw new Exception("HTTP error"); }
+
+                DataContractJsonSerializer jsonSerializer = new DataContractJsonSerializer(typeof(SparkCore.Json.variable));
+
+                object objResponse = jsonSerializer.ReadObject(res.GetResponseStream());
+                SparkCore.Json.variable jsonResponse = objResponse as SparkCore.Json.variable;
+                return jsonResponse;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        // Display access tokens
+        public List<SparkCore.Json.access_token> ListTokens(string id, string pw)
+        {
+            string temp_url = api + "/" + ver + "/access_tokens";
+
+            try
+            {
+                WebRequest wr = WebRequest.Create(temp_url);
+                wr.Headers.Add("Authorization", "Basic " + encodeCreds(id, pw));
+                ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
+                HttpWebResponse res = (HttpWebResponse)wr.GetResponse();
+                if (res.StatusCode != HttpStatusCode.OK) { throw new Exception("HTTP error"); }
+
+                DataContractJsonSerializer jsonSerializer = new DataContractJsonSerializer(typeof(List<SparkCore.Json.access_token>));
+                
+                object objResponse = jsonSerializer.ReadObject(res.GetResponseStream());
+                List<SparkCore.Json.access_token> jsonResponse = objResponse as List<SparkCore.Json.access_token>;
+                return jsonResponse;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        // Delete an access token
+        // STILL TIMES OUT -- needs work
+        public SparkCore.Json.delete_token DeleteToken(string access_token, string id, string pw)
+        {
+            string temp_url = api + "/" + ver + "/access_tokens/" + access_token;
+
+            try
+            {
+                WebRequest wr = WebRequest.Create(temp_url);
+                wr.Headers.Add("Authorization", "Basic " + encodeCreds(id, pw));
                 wr.Method = "DELETE";
-                wr.Headers[HttpRequestHeader.Authorization] = "Basic " + Convert.ToBase64String(Encoding.ASCII.GetBytes(credentials));
+                wr.ContentType = "application/x-www-form-urlencoded";
+                ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
+                System.Windows.Forms.MessageBox.Show(temp_url);
                 HttpWebResponse res = (HttpWebResponse)wr.GetResponse();
                 if (res.StatusCode != HttpStatusCode.OK) { throw new Exception("HTTP error"); }
 
@@ -89,6 +141,7 @@ namespace SparkCore
 
             try
             {
+                ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
                 byte[] retval = wc.UploadValues(url, "POST", data);
                 return Encoding.ASCII.GetString(retval);
             }
@@ -99,10 +152,12 @@ namespace SparkCore
             }
         }
 
-        // Constructor
-        public Api()
+        private string encodeCreds(string id, string pw)
         {
-            ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
+            return Convert.ToBase64String(Encoding.ASCII.GetBytes(id + ":" + pw));
         }
+
+        // Constructor
+        public Api() { }
     }
 }

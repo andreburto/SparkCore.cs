@@ -51,5 +51,31 @@ namespace SparkCore
             [DataMember(Name = "return_value")]
             public Int64 return_value { get; set; }
         }
+
+        [DataContract]
+        public class core_info
+        {
+            [DataMember(Name = "last_app")]
+            public string last_app { get; set; }
+            [DataMember(Name = "last_heard")]
+            public string last_heard { get; set; }
+            [DataMember(Name = "connected")]
+            public bool connected { get; set; }
+            [DataMember(Name = "devideID")]
+            public string deviceID { get; set; }
+        }
+
+        [DataContract]
+        public class variable
+        {
+            [DataMember(Name = "cmd")]
+            public string cmd { get; set; }
+            [DataMember(Name = "name")]
+            public string name { get; set; }
+            [DataMember(Name = "result")]
+            public object result { get; set; }
+            [DataMember(Name = "coreInfo")]
+            public core_info coeInfo { get; set; }
+        }
     }
 }
