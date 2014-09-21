@@ -108,20 +108,26 @@ namespace SparkCore
         public SparkCore.Json.delete_token DeleteToken(string access_token, string id, string pw)
         {
             string temp_url = api + "/" + ver + "/access_tokens/" + access_token;
+            WebClient wc = new WebClient();
 
             try
             {
+                wc.Headers[HttpRequestHeader.Authorization] = "Basic " + encodeCreds(id, pw);
+                byte[] retval = wc.UploadValues(url, "POST", "");
+                MemoryStream mem = new MemoryStream(retval);
+
+                /*
                 WebRequest wr = WebRequest.Create(temp_url);
                 wr.Headers.Add("Authorization", "Basic " + encodeCreds(id, pw));
                 wr.Method = "DELETE";
-                wr.ContentType = "application/x-www-form-urlencoded";
                 ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
                 System.Windows.Forms.MessageBox.Show(temp_url);
                 HttpWebResponse res = (HttpWebResponse)wr.GetResponse();
                 if (res.StatusCode != HttpStatusCode.OK) { throw new Exception("HTTP error"); }
+                */
 
                 DataContractJsonSerializer jsonSerializer = new DataContractJsonSerializer(typeof(SparkCore.Json.delete_token));
-                object objResponse = jsonSerializer.ReadObject(res.GetResponseStream());
+                object objResponse = jsonSerializer.ReadObject(mem);
                 SparkCore.Json.delete_token jsonResponse = objResponse as SparkCore.Json.delete_token;
                 return jsonResponse;            
             }
