@@ -11,3 +11,8 @@ Included files:
 # Api.cs
 # Json.cs
 # README.txt
+
+The C# code is being tested against the v1 key communicating with a Core using
+firmware found at the following address: http://pastebin.com/Tsppy8ey
+
+--Andrew Burton
