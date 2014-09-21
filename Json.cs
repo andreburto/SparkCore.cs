@@ -75,7 +75,7 @@ namespace SparkCore
             [DataMember(Name = "result")]
             public object result { get; set; }
             [DataMember(Name = "coreInfo")]
-            public core_info coeInfo { get; set; }
+            public core_info coreInfo { get; set; }
         }
     }
 }
