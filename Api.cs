@@ -15,6 +15,12 @@ namespace SparkCore
         private const string api = "https://api.spark.io";
         private const string ver = "v1";
         private const string creds = "spark:spark";
+        private string _deviceid = "";
+        private string _accesstoken = "";
+
+        // Public properties
+        public string DeviceID { set { _deviceid = value; } get { return _deviceid; } }
+        public string AccessToken { set { _accesstoken = value; } get { return _accesstoken; } }
 
         // Use your Spark ID and password to get an access token
         public SparkCore.Json.oauth_token Authenticate(string id, string pw)
@@ -52,6 +58,12 @@ namespace SparkCore
             SparkCore.Json.function jsonResponse = objResponse as SparkCore.Json.function;
             return jsonResponse;            
         }
+        // Use internally set deviceID
+        public SparkCore.Json.function CallFunction(string f, string at, string args)
+        {
+            if (_deviceid.Length == 0) { throw new Exception("Missing device ID."); }
+            return CallFunction(_deviceid, f, at, args);
+        }
 
         // Get a variable
         public SparkCore.Json.variable GetVariable(string did, string at, string varname)
@@ -76,6 +88,12 @@ namespace SparkCore
             {
                 throw new Exception(ex.Message);
             }
+        }
+        // Use internally set deviceID
+        public SparkCore.Json.variable GetVariable(string at, string varname)
+        {
+            if (_deviceid.Length == 0) { throw new Exception("Missing device ID."); }
+            return GetVariable(_deviceid, at, varname);
         }
 
         // Display access tokens
