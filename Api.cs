@@ -28,7 +28,7 @@ namespace SparkCore
 
             if (json.Substring(0, 5) == "ERROR") { throw new Exception(json); }
 
-            MemoryStream mem = new MemoryStream(Encoding.ASCII.GetBytes(json));
+            MemoryStream mem = new MemoryStream(Encoding.UTF8.GetBytes(json));
             DataContractJsonSerializer jsonSerializer = new DataContractJsonSerializer(typeof(SparkCore.Json.oauth_token));
             object objResponse = jsonSerializer.ReadObject(mem);
             SparkCore.Json.oauth_token jsonResponse = objResponse as SparkCore.Json.oauth_token;
@@ -46,7 +46,7 @@ namespace SparkCore
 
             if (json.Substring(0, 5) == "ERROR") { throw new Exception(json); }
 
-            MemoryStream mem = new MemoryStream(Encoding.ASCII.GetBytes(json));
+            MemoryStream mem = new MemoryStream(Encoding.UTF8.GetBytes(json));
             DataContractJsonSerializer jsonSerializer = new DataContractJsonSerializer(typeof(SparkCore.Json.function));
             object objResponse = jsonSerializer.ReadObject(mem);
             SparkCore.Json.function jsonResponse = objResponse as SparkCore.Json.function;
@@ -108,26 +108,18 @@ namespace SparkCore
         public SparkCore.Json.delete_token DeleteToken(string access_token, string id, string pw)
         {
             string temp_url = api + "/" + ver + "/access_tokens/" + access_token;
-            WebClient wc = new WebClient();
 
             try
             {
-                wc.Headers[HttpRequestHeader.Authorization] = "Basic " + encodeCreds(id, pw);
-                byte[] retval = wc.UploadValues(url, "POST", "");
-                MemoryStream mem = new MemoryStream(retval);
-
-                /*
                 WebRequest wr = WebRequest.Create(temp_url);
                 wr.Headers.Add("Authorization", "Basic " + encodeCreds(id, pw));
                 wr.Method = "DELETE";
                 ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
-                System.Windows.Forms.MessageBox.Show(temp_url);
                 HttpWebResponse res = (HttpWebResponse)wr.GetResponse();
                 if (res.StatusCode != HttpStatusCode.OK) { throw new Exception("HTTP error"); }
-                */
 
                 DataContractJsonSerializer jsonSerializer = new DataContractJsonSerializer(typeof(SparkCore.Json.delete_token));
-                object objResponse = jsonSerializer.ReadObject(mem);
+                object objResponse = jsonSerializer.ReadObject(res.GetResponseStream());
                 SparkCore.Json.delete_token jsonResponse = objResponse as SparkCore.Json.delete_token;
                 return jsonResponse;            
             }
@@ -143,7 +135,7 @@ namespace SparkCore
             WebClient wc = new WebClient();
 
             // Only need this when you get an access token
-            if (url.Contains("oauth")) { wc.Headers[HttpRequestHeader.Authorization] = "Basic " + Convert.ToBase64String(Encoding.ASCII.GetBytes(creds)); }
+            if (url.Contains("oauth")) { wc.Headers[HttpRequestHeader.Authorization] = "Basic " + Convert.ToBase64String(Encoding.UTF8.GetBytes(creds)); }
 
             try
             {
@@ -160,7 +152,7 @@ namespace SparkCore
 
         private string encodeCreds(string id, string pw)
         {
-            return Convert.ToBase64String(Encoding.ASCII.GetBytes(id + ":" + pw));
+            return Convert.ToBase64String(Encoding.UTF8.GetBytes(id + ":" + pw));
         }
 
         // Constructor
