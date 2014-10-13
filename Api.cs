@@ -12,9 +12,9 @@ namespace SparkCore
 {
     class Api
     {
-        private const string api = "https://api.spark.io";
-        private const string ver = "v1";
-        private const string creds = "spark:spark";
+        private const string _api = "https://api.spark.io";
+        private const string _ver = "v1";
+        private const string _creds = "spark:spark";
         private string _deviceid = "";
         private string _accesstoken = "";
 
@@ -26,7 +26,7 @@ namespace SparkCore
         public SparkCore.Json.oauth_token Authenticate(string id, string pw)
         {
             System.Collections.Specialized.NameValueCollection vals = new System.Collections.Specialized.NameValueCollection();
-            string temp_url = api + "/oauth/token";
+            string temp_url = _api + "/oauth/token";
             vals.Add("grant_type", "password");
             vals.Add("username", id);
             vals.Add("password", pw);
@@ -45,7 +45,7 @@ namespace SparkCore
         public SparkCore.Json.function CallFunction(string did, string f, string at, string args)
         {
             System.Collections.Specialized.NameValueCollection vals = new System.Collections.Specialized.NameValueCollection();
-            string temp_url = api + "/" + ver + "/devices/" + did + "/" + f;
+            string temp_url = _api + "/" + _ver + "/devices/" + did + "/" + f;
             vals.Add("access_token", at);
             vals.Add("args", args);
             string json = PostRequest(temp_url, vals);
@@ -69,7 +69,7 @@ namespace SparkCore
         public SparkCore.Json.variable GetVariable(string did, string at, string varname)
         {
             System.Collections.Specialized.NameValueCollection vals = new System.Collections.Specialized.NameValueCollection();
-            string temp_url = api + "/" + ver + "/devices/" + did + "/" + varname + "?access_token=" + at;
+            string temp_url = _api + "/" + _ver + "/devices/" + did + "/" + varname + "?access_token=" + at;
 
             try
             {
@@ -99,7 +99,7 @@ namespace SparkCore
         // Display access tokens
         public List<SparkCore.Json.access_token> ListTokens(string id, string pw)
         {
-            string temp_url = api + "/" + ver + "/access_tokens";
+            string temp_url = _api + "/" + _ver + "/access_tokens";
 
             try
             {
@@ -125,7 +125,7 @@ namespace SparkCore
         // STILL TIMES OUT -- needs work
         public SparkCore.Json.delete_token DeleteToken(string access_token, string id, string pw)
         {
-            string temp_url = api + "/" + ver + "/access_tokens/" + access_token;
+            string temp_url = _api + "/" + _ver + "/access_tokens/" + access_token;
 
             try
             {
@@ -153,7 +153,7 @@ namespace SparkCore
             WebClient wc = new WebClient();
 
             // Only need this when you get an access token
-            if (url.Contains("oauth")) { wc.Headers[HttpRequestHeader.Authorization] = "Basic " + Convert.ToBase64String(Encoding.UTF8.GetBytes(creds)); }
+            if (url.Contains("oauth")) { wc.Headers[HttpRequestHeader.Authorization] = "Basic " + Convert.ToBase64String(Encoding.UTF8.GetBytes(_creds)); }
 
             try
             {
